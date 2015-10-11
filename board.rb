@@ -31,12 +31,61 @@ class Board
 
   def []=(pos, value)
     x, y = pos
-    tile = grid[x][y]
-    tile.value = value
+    grid[x][y] = value
+  # tile = grid[x][y]
+  # tile.value = value
+  end
+
+  def rows
+    grid
   end
 
   def columns
     rows.transpose
+  end
+
+  def square(idx)
+    tiles = []
+    x = (idx / 3) * 3
+    y = (idx % 3) * 3
+
+    (x...x + 3).each do |i|
+      (y...y + 3).each do |j|
+        tiles << self[[i, j]]
+      end
+    end
+
+    tiles
+  end
+
+  def valid_square_indices(idx)
+    indices = []
+    x = (idx / 3) * 3
+    y = (idx % 3) * 3
+
+    (x...x + 3).each do |i|
+      (y...y + 3).each do |j|
+        indices << [i, j] unless self[[i, j]].given?
+      end
+    end
+
+    indices
+  end
+
+  def squares
+    (0..8).to_a.map { |i| square(i) }
+  end
+
+  def deep_dup
+    copied_board = Board.new
+    (0..8).each do |i|
+      (0..8).each do |j|
+        tile = grid[i][j]
+        copied_board.grid[i][j] = tile.class.new(tile.value)
+        copied_board.grid[i][j].given = tile.given?
+      end
+    end
+    copied_board
   end
 
   def render
@@ -56,9 +105,7 @@ class Board
     puts var.map {|row| row.join(' ') + "\n"}
   end
 
-  def rows
-    grid
-  end
+
 
   def size
     grid.size
@@ -75,35 +122,7 @@ class Board
     nums.sort == (1..9).to_a
   end
 
-  def square(idx)
-    tiles = []
-    x = (idx / 3) * 3
-    y = (idx % 3) * 3
 
-    (x...x + 3).each do |i|
-      (y...y + 3).each do |j|
-        tiles << self[[i, j]]
-      end
-    end
-
-    tiles
-  end
-
-  def squares
-    (0..8).to_a.map { |i| square(i) }
-  end
-
-  def deep_dup
-    copied_board = Board.new
-    (0..8).each do |i|
-      (0..8).each do |j|
-        tile = grid[i][j]
-        copied_board.grid[i][j] = tile.class.new(tile.value)
-        copied_board.grid[i][j].given = tile.given?
-      end
-    end
-    copied_board
-  end
 
   def valid_moves
     result = []
@@ -135,6 +154,13 @@ class Board
         el.value = options.shuffle!.pop unless el.given?
       end
     end
+  end
+
+  def can_lockout?
+  end
+
+  def lockout
+
   end
 
 
