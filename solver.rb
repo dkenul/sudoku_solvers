@@ -18,37 +18,9 @@ class Solver
     @board.solved?
   end
 
-  # Randomize and score the board #
 
-  def randomize
-    board.rows.flatten.each do |tile|
-      tile.value = rand(1..9) if tile.value.zero?
-    end
-  end
-
-  def randomize!
-    board.rows.flatten.each do |tile|
-      tile.value = rand(1..9) unless tile.given?
-    end
-  end
-
-  def score
-    score = 0
-    board.rows.each do |row|
-      row_values = row.map { |el| el.value}
-      row_values.each do |el_value|
-        score -= 1 if row_values.count(el_value) == 1
-      end
-    end
-
-    board.columns.each do |col|
-      col_values = col.map { |el| el.value}
-      col_values.each do |el_value|
-        score -= 1 if col_values.count(el_value) == 1
-      end
-    end
-
-    score
+  def render
+    board.render
   end
 
 end

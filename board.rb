@@ -115,4 +115,48 @@ class Board
     result
   end
 
+  def randomize
+    rows.flatten.each do |tile|
+      tile.value = rand(1..9) if tile.value.zero?
+    end
+  end
+
+  def randomize!
+    rows.flatten.each do |tile|
+      tile.value = rand(1..9) unless tile.given?
+    end
+  end
+
+  def semi_randomize!
+    squares.each do |square|
+      given_square_values = square.select(&:given?).map(&:value)
+      options = (1..9).to_a - given_square_values
+      square.each do |el|
+        el.value = options.shuffle!.pop unless el.given?
+      end
+    end
+  end
+
+
+  def score
+    score = 0
+
+    rows.each do |row|
+      row_values = row.map { |el| el.value}
+      row_values.each do |el_value|
+        score -= 1 if row_values.count(el_value) == 1
+      end
+    end
+
+    columns.each do |col|
+      col_values = col.map { |el| el.value}
+      col_values.each do |el_value|
+        score -= 1 if col_values.count(el_value) == 1
+      end
+    end
+
+    score
+  end
+
+
 end

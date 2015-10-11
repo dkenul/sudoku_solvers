@@ -1,14 +1,20 @@
 require_relative 'solver'
 
-class RandomSolver < Solver
-
-  # Worst Possible Scenario - should be used for testing only #
+class SemiRandom < Solver
 
   def solve
+
     iteration = 0
 
     until solved?
-      board.randomize!
+
+      test_board = board.deep_dup
+      until test_board.score < board.score
+        test_board.semi_randomize!
+      end
+
+      @board = test_board
+
       iteration += 1
       render
       puts "Score : #{board.score}"
