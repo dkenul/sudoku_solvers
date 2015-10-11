@@ -30,7 +30,9 @@ class SimulatedAnnealing < Solver
       test_score = test_board.score
       delta = (board.score - test_score)
 
-      if exp(delta / temp) - rand() > 0
+      if test_score <= board.score
+        @board = test_board
+      elsif exp(delta / temp) - rand() > 0
         @board = test_board
       end
 
@@ -38,20 +40,22 @@ class SimulatedAnnealing < Solver
         break
       end
 
-      temp *= 0.99999
+      temp *= 0.99975
       iteration += 1
-      if iteration % 1000 == 0
-
+      if iteration % 2000 == 0
         render
         puts "Score : #{board.score}"
         puts "Temperature : #{temp}"
         puts "Iteration : #{iteration}"
       end
+
     end
 
     puts "SOLVED!!!"
     render
-
+    puts "Score : #{board.score}"
+    puts "Temperature : #{temp}"
+    puts "Iteration : #{iteration}"
   end
 
 end
