@@ -20,35 +20,44 @@ class SimulatedAnnealing < Solver
   end
 
   def solve
-    board.semi_randomize!
-    temp = 0.5
-    iteration = 0
 
     until solved?
+      board.semi_randomize!
+      temp = 1.0
+      iteration = 0
 
-      test_board = random_swap
-      test_score = test_board.score
-      delta = (board.score - test_score)
+      # Set markov chain #
+      chains = 100000
 
-      if test_score <= board.score
-        @board = test_board
-      elsif exp(delta / temp) - rand() > 0
-        @board = test_board
+      chains.times do
+
+        test_board = random_swap
+        test_score = test_board.score
+        delta = (board.score - test_score)
+
+        # Set Probability Function with #
+        if test_score <= board.score
+          @board = test_board
+        elsif exp(delta / temp) - rand() > 0
+          @board = test_board
+        end
+
+        if test_score == -162
+          break
+        end
+
+        # Set annealing schedule #
+        temp -= (1.0 / (chains * 1.25))
+        iteration += 1
+        if iteration % 2000 == 0
+          render
+          puts "Score : #{board.score}"
+          puts "Temperature : #{temp}"
+          puts "Iteration : #{iteration}"
+        end
       end
 
-      if test_score == -162
-        break
-      end
-
-      temp *= 0.99975
-      iteration += 1
-      if iteration % 2000 == 0
-        render
-        puts "Score : #{board.score}"
-        puts "Temperature : #{temp}"
-        puts "Iteration : #{iteration}"
-      end
-
+      puts "REHEAT SYSTEM"
     end
 
     puts "SOLVED!!!"
