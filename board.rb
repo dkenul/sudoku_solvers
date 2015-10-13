@@ -105,8 +105,6 @@ class Board
     puts var.map {|row| row.join(' ') + "\n"}
   end
 
-
-
   def size
     grid.size
   end
@@ -121,8 +119,6 @@ class Board
     nums = tiles.map(&:value)
     nums.sort == (1..9).to_a
   end
-
-
 
   def valid_moves
     result = []
@@ -156,14 +152,6 @@ class Board
     end
   end
 
-  def can_lockout?
-  end
-
-  def lockout
-
-  end
-
-
   def score
     score = 0
 
@@ -183,6 +171,5 @@ class Board
 
     score
   end
-
 
 end
