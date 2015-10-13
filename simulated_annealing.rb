@@ -29,26 +29,27 @@ class SimulatedAnnealing < Solver
       convergence_weight = 1.25
       t_0 = 1.0
       dt = t_0
-      iteration = 0
+      x = 0
 
-      # Set markov chain #
-      chains = 100000
+      # Set max iterations #
+      runtime = 100000
 
-      chains.times do
+      runtime.times do
 
         test_board = random_swap
         test_score = test_board.score
         delta = (board.score - test_score)
 
         # Set annealing schedule #
+
         # Discreet #
-        #dt -= (t_0 / (chains * convergence_weight))
+        #dt -= (t_0 / (runtime.to_f * convergence_weight))
         # Exponential #
-        #dt = t_0 * ((1.0 - (1.0 / chains)) ** iteration)
+        #dt = t_0 * ((1.0 - (1.0 / runtime)) ** x)
         # Linear #
-        dt = t_0 - (iteration / (chains.to_f * convergence_weight))
+        dt = t_0 - (x / (runtime.to_f * convergence_weight))
         # Inverse Square Log # This is sub-optimal, for comparison #
-        #dt = 1 / sqrt(log(iteration + 1))
+        #dt = 1 / sqrt(log(x + 1))
 
         # Set probability function #
         if test_score <= board.score
@@ -61,23 +62,23 @@ class SimulatedAnnealing < Solver
           break
         end
 
-        iteration += 1
-        if iteration % 2000 == 0
+        x += 1
+        if x % 2000 == 0
           render
           puts "Score : #{board.score}"
           puts "Temperature : #{dt}"
-          puts "Iteration : #{iteration}"
+          puts "Iteration : #{x}"
         end
       end
 
-      puts "REHEAT SYSTEM" if iteration == chains
+      puts "REHEAT SYSTEM" if x == runtime
     end
 
     puts "SOLVED!!!"
     render
     puts "Score : #{board.score}"
     puts "Temperature : #{dt}"
-    puts "Iteration : #{iteration}"
+    puts "Iteration : #{x}"
     puts "Time to Solve: #{Time.now - benchmark} seconds"
   end
 
