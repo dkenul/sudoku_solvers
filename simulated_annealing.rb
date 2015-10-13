@@ -20,10 +20,15 @@ class SimulatedAnnealing < Solver
   end
 
   def solve
+    benchmark = Time.now
 
     until solved?
       board.semi_randomize!
-      temp = 1.0
+
+      # Set initial conditions #
+      convergence_weight = 1.25
+      t_0 = 1.0
+      dt = t_0
       iteration = 0
 
       # Set markov chain #
@@ -35,10 +40,20 @@ class SimulatedAnnealing < Solver
         test_score = test_board.score
         delta = (board.score - test_score)
 
-        # Set Probability Function with #
+        # Set annealing schedule #
+        # Discreet #
+        #dt -= (t_0 / (chains * convergence_weight))
+        # Exponential #
+        #dt = t_0 * ((1.0 - (1.0 / chains)) ** iteration)
+        # Linear #
+        dt = t_0 - (iteration / (chains.to_f * convergence_weight))
+        # Inverse Square Log # This is sub-optimal, for comparison #
+        #dt = 1 / sqrt(log(iteration + 1))
+
+        # Set probability function #
         if test_score <= board.score
           @board = test_board
-        elsif exp(delta / temp) - rand() > 0
+        elsif exp(delta / dt) - rand() > 0
           @board = test_board
         end
 
@@ -46,25 +61,24 @@ class SimulatedAnnealing < Solver
           break
         end
 
-        # Set annealing schedule #
-        temp -= (1.0 / (chains * 1.25))
         iteration += 1
         if iteration % 2000 == 0
           render
           puts "Score : #{board.score}"
-          puts "Temperature : #{temp}"
+          puts "Temperature : #{dt}"
           puts "Iteration : #{iteration}"
         end
       end
 
-      puts "REHEAT SYSTEM"
+      puts "REHEAT SYSTEM" if iteration == chains
     end
 
     puts "SOLVED!!!"
     render
     puts "Score : #{board.score}"
-    puts "Temperature : #{temp}"
+    puts "Temperature : #{dt}"
     puts "Iteration : #{iteration}"
+    puts "Time to Solve: #{Time.now - benchmark} seconds"
   end
 
 end

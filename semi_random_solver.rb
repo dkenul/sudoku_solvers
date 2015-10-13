@@ -9,16 +9,17 @@ class SemiRandom < Solver
     until solved?
 
       test_board = board.deep_dup
-      until test_board.score < board.score
-        test_board.semi_randomize!
-      end
+      test_board.semi_randomize!
+
 
       @board = test_board
 
       iteration += 1
-      render
-      puts "Score : #{board.score}"
-      puts "Iteration : #{iteration}"
+      if iteration % 2000 == 0
+        render
+        puts "Score : #{board.score}"
+        puts "Iteration : #{iteration}"
+      end
     end
 
     puts "SOLVED!!!"
