@@ -32,7 +32,7 @@ class SimulatedAnnealing < Solver
       x = 0
 
       # Set max iterations #
-      runtime = 100000
+      runtime = 200000
 
       runtime.times do
 
@@ -45,11 +45,13 @@ class SimulatedAnnealing < Solver
         # Discreet #
         #dt -= (t_0 / (runtime.to_f * convergence_weight))
         # Exponential #
-        #dt = t_0 * ((1.0 - (1.0 / runtime)) ** x)
+        # dt = t_0 * ((1.0 - (1.0 / runtime)) ** x)
         # Linear #
-        dt = t_0 - (x / (runtime.to_f * convergence_weight))
-        # Inverse Square Log # This is sub-optimal, for comparison #
-        #dt = 1 / sqrt(log(x + 1))
+        #dt = t_0 - (x / (runtime.to_f * convergence_weight))
+        # Inverse Log function f(x) = c / log(x + 1)
+        #dt = 5.0 / log(x + 1)
+        # Customized inverse square log function # Use at your own risk
+        dt = 3.75 / log(sqrt(x) + 2)
 
         # Set probability function #
         if test_score <= board.score
@@ -73,13 +75,18 @@ class SimulatedAnnealing < Solver
 
       puts "REHEAT SYSTEM" if x == runtime
     end
-
+    benchmark_f = Time.now - benchmark
     puts "SOLVED!!!"
     render
     puts "Score : #{board.score}"
     puts "Temperature : #{dt}"
     puts "Iteration : #{x}"
-    puts "Time to Solve: #{Time.now - benchmark} seconds"
+    puts "Time to Solve: #{benchmark_f} seconds"
+
+    # open('output/sudoku3_SA_custom_out.txt', 'a') { |f|
+    #   f.puts benchmark_f
+    # }
+
   end
 
 end
